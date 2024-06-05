@@ -3,24 +3,20 @@ import sys
 import json
 import logging
 
-import openai
+from openai import OpenAI
 
 from typing import Union
 
-from jaxpy.genai.functions import get_default_handler
-from jaxpy.genai.history import ChatHistory
-from jaxpy.genai.message import (
+from llmtool.genai.functions import get_default_handler
+from llmtool.genai.history import ChatHistory
+from llmtool.genai.message import (
     FunctionMessage,
     FunctionCallResultMessage,
     AssistantMessage,
     BaseMessage,
     UserMessage,
 )
-from jaxpy.genai.prompts import DEFAULT as DEFAULT_PROMPT
-
-openai.api_key = os.getenv("CHATGPT_API_KEY")
-openai.organization = os.getenv("CHATGPT_ORGANIZATION")
-
+from llmtool.genai.prompts import DEFAULT as DEFAULT_PROMPT
 
 class Agent:
     def __init__(
@@ -38,6 +34,9 @@ class Agent:
         self.function_handler = get_default_handler()
         self.disable_functions = disable_functions
         self.logger = logger
+        self.client = OpenAI(
+            api_key=os.getenv("OPENAI_API_KEY"),
+        )
 
     def load_chat_history(self):
         self.chat_history.load()
@@ -70,17 +69,15 @@ class Agent:
         actual_response = self.send_message(function_call_result_message)
         return actual_response
 
-    def build_message_from_response(
-        self, message_json: dict
-    ) -> Union[FunctionMessage, AssistantMessage]:
-        if "function_call" in message_json:
-            function_call = message_json["function_call"]
+    def build_message_from_response(self, message) -> Union[FunctionMessage, AssistantMessage]:
+        if message.function_call: 
+            function_call = message.function_call
             return FunctionMessage(
                 function_call=function_call,
             )
         else:
             return AssistantMessage(
-                content=message_json["content"],
+                content=message.content,
             )
 
     def send_user_message(
@@ -101,22 +98,22 @@ class Agent:
 
         if self.disable_functions:
             # Use the OpenAI API to generate a response
-            response = openai.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model=self.model, messages=self.chat_history.to_json()
             )
         else:
             # Use the OpenAI API to generate a response
-            response = openai.ChatCompletion.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=self.chat_history.to_json(),
                 functions=self.function_handler.to_json(),
             )
 
         response_message = self.build_message_from_response(
-            response["choices"][0]["message"]
+            response.choices[0].message
         )
         if type(response_message) == FunctionMessage:
-            response_message = self.handle_function_calls(response_message)
+            response_message = self.handle_function_calls(response_message.to_hash())
 
         # Append new messages to the chat history
         self.chat_history.append(response_message)

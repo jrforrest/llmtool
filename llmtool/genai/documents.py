@@ -3,11 +3,41 @@ Provides postgres vector-db based document persistence and search
 """
 
 import os
+import sys
 
 import psycopg2
 
-import jaxpy.genai.embedding as embedding
+import llmtool.genai.embedding as embedding
 
+class DbDelegator:
+    def __init__(self):
+        try:
+            self.db = DB()
+        except psycopg2.OperationalError:
+            print("Failed to connect to database, documents disabled.", file=sys.stderr)
+            self.db = DBStub()
+
+    def init_schema(self):
+        self.db.init_schema()
+
+    def save_document(self, text: str):
+        self.db.save_document(text)
+
+    def search_documents(self, search_str: str) -> str:
+        return self.db.search_documents(search_str)
+
+class DBStub:
+    def __init__(self):
+        pass
+
+    def init_schema(self):
+        pass
+
+    def save_document(self, text: str):
+        pass
+
+    def search_documents(self, search_str: str) -> str:
+        return ""
 
 class DB:
     def __init__(self):

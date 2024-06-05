@@ -7,7 +7,6 @@ h11==0.14.0
 httpcore==1.0.5
 httpx==0.27.0
 idna==3.7
--e git+ssh://git@git.jackforrest.codes/var/git/home@119c7c98fee0a2c3b5d6d8ef17623f33085410e6#egg=llmtool&subdirectory=src/llmtool
 openai==1.31.0
 psycopg2-binary==2.9.9
 pydantic==2.7.3

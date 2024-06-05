@@ -2,7 +2,7 @@ import sys
 import argparse
 import logging
 
-from jaxpy.interactive_markdown import (
+from llmtool.interactive_markdown import (
     MarkdownDocument,
     CodeBlock,
     SyntaxHighlightingError,

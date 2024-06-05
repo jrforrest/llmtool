@@ -7,7 +7,7 @@ from typing import Union, Callable
 
 import os
 
-from jaxpy.genai import documents
+from llmtool.genai import documents
 
 
 class Function:
@@ -79,7 +79,7 @@ class FunctionHandler:
 
 
 def get_default_handler() -> FunctionHandler:
-    documents_db = documents.DB()
+    documents_db = documents.DbDelegator()
     documents_db.init_schema()
 
     def get_file_contents(path: str) -> str:

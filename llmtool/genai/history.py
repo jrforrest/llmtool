@@ -4,7 +4,7 @@ Persistence of chat history
 
 import os, json
 
-from jaxpy.genai.message import (
+from llmtool.genai.message import (
     ContentMessage,
     FunctionMessage,
     SystemMessage,
