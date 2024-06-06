@@ -2,8 +2,8 @@
 
 My Command-line tool for interracting with LLMs.  Currently supports LLaMA and GPT.
 
-This is a personal tool and is not maintained for public use.  There are better-maintained alternatives
-available out there since I built this.
+This is a prototype-grade personal tool and is not maintained for public use.
+There are better-maintained tools available out there since I built this.
 
 ## Usage
 

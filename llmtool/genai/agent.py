@@ -97,12 +97,10 @@ class Agent:
         self.logger.debug(f"chat history: {self.chat_history.to_json()}")
 
         if self.disable_functions:
-            # Use the OpenAI API to generate a response
             response = self.client.chat.completions.create(
                 model=self.model, messages=self.chat_history.to_json()
             )
         else:
-            # Use the OpenAI API to generate a response
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=self.chat_history.to_json(),
